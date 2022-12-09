@@ -1,0 +1,27 @@
+name: "Upload to Public S3"
+description: "Upload to S3 with public-read ACL"
+
+inputs:
+  src:
+    description: "Path to file to upload"
+    required: true
+  dest:
+    description: "S3 Destination, e.g. '<bucket>/<key>'; may use multiple lines to create multiple copies"
+    required: true
+  region:
+    description: "AWS Region (AWS_REGION)"
+    required: true
+  access-key-id:
+    description: "AWS Access Key ID (AWS_ACCESS_KEY_ID)"
+    required: true
+  secret-access-key:
+    description: "AWS Secret Access Key (AWS_SECRET_ACCESS_KEY)"
+    required: true
+outputs:
+  public-url:
+    description: "Public S3 URL of uploaded object (first if multiple copies)"
+    value: ${{ steps.public-url.outputs.public-url }}
+
+runs:
+  using: "node16"
+  main: "index.js"

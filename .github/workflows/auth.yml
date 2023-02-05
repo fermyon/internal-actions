@@ -42,7 +42,7 @@ jobs:
           go-version: "1.19"
 
       - name: Install spin
-        uses: engineerd/configurator@v0.0.8
+        uses: engineerd/configurator@v0.0.9
         with:
           name: "spin"
           url: https://github.com/fermyon/spin/releases/download/canary/spin-canary-linux-amd64.tar.gz

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/fermyon/actions/fermyon-cloud-login/pkg/uidriver"
@@ -91,22 +92,40 @@ func LoginWithGithub(cloudLink string, username, password string) (string, error
 	if err != nil {
 		return "", err
 	}
+	logrus.Infof("entered 2fa")
 
-	logrus.Infof("login with github completed successfully !")
-	//wait for signout button on Fermyon cloud
-	_, err = ui.WebDriver.FindElement(selenium.ByXPATH, "//app-user-menu")
-	if err != nil {
-		return "", err
-	}
+	var rawtoken string
+	ui.WebDriver.WaitWithTimeoutAndInterval(func(driver selenium.WebDriver) (bool, error) {
+		url, err := driver.CurrentURL()
+		if err != nil {
+			fmt.Println(err.Error())
+			return false, nil
+		}
 
-	logrus.Infof("Getting cloud api token")
-	raw, err := ui.WebDriver.ExecuteScript("return localStorage.getItem('token');", nil)
-	if err != nil {
-		return "", err
-	}
+		if !strings.Contains(url, cloudLink) {
+			fmt.Printf("waiting for url to be %s, current url %s\n", cloudLink, url)
+			return false, nil
+		}
+
+		fmt.Printf("current url is %s\n", url)
+		raw, err := driver.ExecuteScript("return localStorage.getItem('token');", nil)
+		if err != nil {
+			fmt.Println(err.Error())
+			return false, nil
+		}
+
+		if rawstr, ok := raw.(string); ok && rawstr != "" {
+			fmt.Printf("raw token is %s", rawstr)
+			rawtoken = rawstr
+			return true, nil
+		}
+
+		fmt.Printf("waiting for login to cloud to finish\n")
+		return false, nil
+	}, 30*time.Second, 1*time.Second)
 
 	token := &Token{}
-	err = json.Unmarshal([]byte(raw.(string)), token)
+	err = json.Unmarshal([]byte(rawtoken), token)
 	if err != nil {
 		return "", err
 	}

@@ -98,7 +98,7 @@ func LoginWithGithub(cloudLink string, username, password string) (string, error
 	ui.WebDriver.WaitWithTimeoutAndInterval(func(driver selenium.WebDriver) (bool, error) {
 		url, err := driver.CurrentURL()
 		if err != nil {
-			logrus.Debugf(err.Error())
+			logrus.WithError(err).Debug("failed to get current url")
 			return false, nil
 		}
 
@@ -110,7 +110,7 @@ func LoginWithGithub(cloudLink string, username, password string) (string, error
 		logrus.Debugf("current url is %s\n", url)
 		raw, err := driver.ExecuteScript("return localStorage.getItem('token');", nil)
 		if err != nil {
-			logrus.Debugf(err.Error())
+			logrus.WithError(err).Debug("failed to execute script to get token")
 			return false, nil
 		}
 

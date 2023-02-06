@@ -5,12 +5,13 @@ import (
 	"os"
 
 	"github.com/fermyon/actions/fermyon-cloud-login/pkg/fermyon"
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
 	err := login()
 	if err != nil {
-		fmt.Println(err)
+		logrus.WithError(err).Error("login failed")
 		os.Exit(1)
 	}
 }

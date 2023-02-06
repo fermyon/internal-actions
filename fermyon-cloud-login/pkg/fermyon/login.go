@@ -94,38 +94,37 @@ func LoginWithGithub(cloudLink string, username, password string) (string, error
 	}
 	logrus.Infof("entered 2fa")
 
-	var rawtoken string
+	var rawToken string
 	ui.WebDriver.WaitWithTimeoutAndInterval(func(driver selenium.WebDriver) (bool, error) {
 		url, err := driver.CurrentURL()
 		if err != nil {
-			fmt.Println(err.Error())
+			logrus.Debugf(err.Error())
 			return false, nil
 		}
 
 		if !strings.Contains(url, cloudLink) {
-			fmt.Printf("waiting for url to be %s, current url %s\n", cloudLink, url)
+			logrus.Debugf("waiting for url to be %s, current url %s\n", cloudLink, url)
 			return false, nil
 		}
 
-		fmt.Printf("current url is %s\n", url)
+		logrus.Debugf("current url is %s\n", url)
 		raw, err := driver.ExecuteScript("return localStorage.getItem('token');", nil)
 		if err != nil {
-			fmt.Println(err.Error())
+			logrus.Debugf(err.Error())
 			return false, nil
 		}
 
-		if rawstr, ok := raw.(string); ok && rawstr != "" {
-			fmt.Printf("raw token is %s", rawstr)
-			rawtoken = rawstr
+		if rawStr, ok := raw.(string); ok && rawStr != "" {
+			rawToken = rawStr
 			return true, nil
 		}
 
-		fmt.Printf("waiting for login to cloud to finish\n")
+		logrus.Infof("waiting for login to cloud to finish\n")
 		return false, nil
 	}, 30*time.Second, 1*time.Second)
 
 	token := &Token{}
-	err = json.Unmarshal([]byte(rawtoken), token)
+	err = json.Unmarshal([]byte(rawToken), token)
 	if err != nil {
 		return "", err
 	}

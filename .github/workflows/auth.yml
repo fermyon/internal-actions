@@ -9,11 +9,18 @@ on:
         required: true  
       gh_totp_secret:  
         required: true
+    inputs:
+      fermyon_deployment_env:
+        required: false
+        type: string
+        default: "fermyon-cloud-login"
 
 env:
   E2E_GH_USERNAME: ${{ secrets.gh_username }}
   E2E_GH_PASSWORD: ${{ secrets.gh_password }}
   E2E_GH_TOTP_SECRET: ${{ secrets.gh_totp_secret }}
+  FERMYON_DEPLOYMENT_ENVIRONMENT: ${{ inputs.fermyon_deployment_env }}
+
 jobs:
   update:
     runs-on: ubuntu-22.04
@@ -35,7 +42,7 @@ jobs:
           go-version: "1.19"
 
       - name: Install spin
-        uses: engineerd/configurator@v0.0.8
+        uses: engineerd/configurator@v0.0.9
         with:
           name: "spin"
           url: https://github.com/fermyon/spin/releases/download/canary/spin-canary-linux-amd64.tar.gz
@@ -53,5 +60,5 @@ jobs:
       - name: "Archive spin token file"
         uses: actions/upload-artifact@v3
         with:
-          name: spin-fermyon-cloud-config.json
-          path: /home/runner/.config/fermyon/config.json
+          name: ${{ env.FERMYON_DEPLOYMENT_ENVIRONMENT }}.json
+          path: /home/runner/.config/fermyon/${{ env.FERMYON_DEPLOYMENT_ENVIRONMENT }}.json

@@ -98,23 +98,24 @@ func LoginWithGithub(cloudLink string, username, password string) (string, error
 	ui.WebDriver.WaitWithTimeoutAndInterval(func(driver selenium.WebDriver) (bool, error) {
 		url, err := driver.CurrentURL()
 		if err != nil {
-			logrus.WithError(err).Debug("failed to get current url")
+			logrus.WithError(err).Info("failed to get current url")
 			return false, nil
 		}
 
 		if !strings.Contains(url, cloudLink) {
-			logrus.Debugf("waiting for url to be %s, current url %s\n", cloudLink, url)
+			logrus.Info("waiting for url to be %s, current url %s\n", cloudLink, url)
 			return false, nil
 		}
 
 		logrus.Debugf("current url is %s\n", url)
 		raw, err := driver.ExecuteScript("return localStorage.getItem('token');", nil)
 		if err != nil {
-			logrus.WithError(err).Debug("failed to execute script to get token")
+			logrus.WithError(err).Info("failed to execute script to get token")
 			return false, nil
 		}
 
 		if rawStr, ok := raw.(string); ok && rawStr != "" {
+			fmt.Println("token is ", rawStr)
 			rawToken = rawStr
 			return true, nil
 		}
@@ -133,7 +134,7 @@ func LoginWithGithub(cloudLink string, username, password string) (string, error
 }
 
 func handle2FA(ui *uidriver.Driver) error {
-	el, err := ui.WebDriver.FindElement(selenium.ByID, "totp")
+	el, err := ui.WebDriver.FindElement(selenium.ByID, "app_totp")
 	if err != nil {
 		return err
 	}

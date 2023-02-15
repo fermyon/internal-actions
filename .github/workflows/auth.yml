@@ -14,13 +14,17 @@ on:
         required: false
         type: string
         default: "fermyon-cloud-login"
+      cloud_url:
+        required: false
+        type: string
+        default: "https://cloud.fermyon.com"
 
 env:
   E2E_GH_USERNAME: ${{ secrets.gh_username }}
   E2E_GH_PASSWORD: ${{ secrets.gh_password }}
   E2E_GH_TOTP_SECRET: ${{ secrets.gh_totp_secret }}
   FERMYON_DEPLOYMENT_ENVIRONMENT: ${{ inputs.fermyon_deployment_env }}
-
+  CLOUD_URL: ${{ inputs.cloud_url }}
 jobs:
   update:
     runs-on: ubuntu-22.04

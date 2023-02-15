@@ -17,7 +17,11 @@ func main() {
 }
 
 func login() error {
-	cloudLink := fermyon.GetCloudLink(os.Getenv("environment"))
+	cloudLink := os.Getenv("CLOUD_URL")
+
+	if cloudLink == "" {
+		logrus.Fatal("no cloud url provided")
+	}
 
 	code, err := fermyon.GenerateDeviceCode(cloudLink)
 	if err != nil {

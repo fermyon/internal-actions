@@ -3,7 +3,7 @@ module github.com/fermyon/actions/fermyon-cloud-login
 go 1.19
 
 require (
-	github.com/sirupsen/logrus v1.9.0
+	github.com/sirupsen/logrus v1.9.1
 	github.com/tebeka/selenium v0.9.9
 	github.com/xlzd/gotp v0.1.0
 )
